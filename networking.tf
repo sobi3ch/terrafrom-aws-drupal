@@ -1,9 +1,59 @@
+variable "vpc_cidr" {
+  default = "10.0.0.0/16"
+}
+
 resource "aws_vpc" "main" {
-  cidr_block       = "10.0.0.0/16"
+  cidr_block       = var.vpc_cidr
   instance_tenancy = "dedicated"
+  enable_dns_hostnames = true
+  enable_dns_support = true
 
   tags = {
     Name = var.name
+    Client = var.client
+    Env = var.env
+    Provider = var.solution_provider
+  }
+}
+
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = var.name
+    Client = var.client
+    Env = var.env
+    Provider = var.solution_provider
+  }
+}
+
+resource "aws_default_route_table" "main" {
+  default_route_table_id = aws_vpc.main.default_route_table_id
+
+  route {
+      cidr_block = "0.0.0.0/0"
+      gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = {
+    Name = "${var.name}-public"
+    Client = var.client
+    Env = var.env
+    Provider = var.solution_provider
+  }
+}
+
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+  # route {
+  #     cidr_block = "0.0.0.0/0"
+  #     gateway_id = aws_internet_gateway.main.id
+  # }
+
+  tags = {
+    Name = "${var.name}-private"
     Client = var.client
     Env = var.env
     Provider = var.solution_provider
@@ -15,45 +65,62 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-resource "aws_subnet" "website-main-a" {
+resource "aws_subnet" "website-public" {
+  count = length(data.aws_availability_zones.available.names)
   vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = data.aws_availability_zones.available.names[0]
+  cidr_block = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index+1)
+  availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
-    Name = var.name
+    Name = "${var.name}-public"
     Client = var.client
     Env = var.env
     Provider = var.solution_provider
   }
 
-  depends_on = [
-    data.aws_availability_zones.available,
-  ]
+  depends_on = [ data.aws_availability_zones.available ]
 }
 
-resource "aws_subnet" "website-main-b" {
+resource "aws_subnet" "website-private" {
+  count = length(data.aws_availability_zones.available.names)
   vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.2.0/24"
-  availability_zone = "eu-north-1b"
+  cidr_block = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index+10)
+  availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
-    Name = var.name
+    Name = "${var.name}-private"
     Client = var.client
     Env = var.env
     Provider = var.solution_provider
   }
+
+  depends_on = [ data.aws_availability_zones.available ]
 }
 
-resource "aws_subnet" "website-main-c" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.3.0/24"
-  availability_zone = "eu-north-1c"
+resource "aws_route_table_association" "private-association" {
+  count = length(data.aws_availability_zones.available.names)
+  subnet_id      = aws_subnet.website-private[count.index].id
+  route_table_id = aws_route_table.private.id
 
-  tags = {
-    Name = var.name
-    Client = var.client
-    Env = var.env
-    Provider = var.solution_provider
-  }
+  depends_on = [ data.aws_availability_zones.available ]
 }
+
+# output "cidr" {
+#   value = "10.0.0.0/8"
+# }
+
+# output "subnet" {
+#   value = cidrsubnet("10.0.0.0/16", 8, 10+7) # 10.24.0.0/15
+# }
+
+# variable "az" {
+#   default = 3
+# }
+#
+# output "dynamic_subnet" {
+#   value = format("10.0.%d.0/8", var.az)
+# }
+#
+# output "list_of_subnets-private" {
+#   value = aws_subnet.website-private.*.id
+# }
