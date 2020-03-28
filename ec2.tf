@@ -23,10 +23,8 @@
 #   vpc_security_group_ids = [
 #     aws_security_group.webserver.id
 #   ]
-#   tags = {
-#     Name = var.name
-#     Client = var.client
-#     Env = var.env
-#     Provider = var.solution_provider
-#   }
+# tags = merge(local.common_tags, {
+#   "Name" = "${var.name}"
+#   "Environment" = var.env
+# })
 # }
