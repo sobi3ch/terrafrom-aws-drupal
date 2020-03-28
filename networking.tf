@@ -4,7 +4,7 @@ variable "vpc_cidr" {
 
 resource "aws_vpc" "main" {
   cidr_block       = var.vpc_cidr
-  instance_tenancy = "dedicated"
+  instance_tenancy = "default"
   enable_dns_hostnames = true
   enable_dns_support = true
 
@@ -105,18 +105,22 @@ resource "aws_route_table_association" "private-association" {
   depends_on = [ data.aws_availability_zones.available ]
 }
 
-resource "aws_security_group" "allow_tls" {
+resource "aws_security_group" "webserver" {
   name        = "Webserver"
   description = "Allow necessary webserver traffic"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    # TLS (change to whatever ports you need)
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    # Please restrict your ingress to only necessary IPs and ports.
-    # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
     cidr_blocks = ["0.0.0.0/0"]
   }
 
