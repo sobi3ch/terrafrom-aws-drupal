@@ -15,18 +15,19 @@
 # }
 
 # EC2
-# resource "aws_instance" "web" {
-#   # ami           = data.aws_ami.ubuntu.id
-#   ami           = "ami-083b53142137770ad"
-#   instance_type = "t3.micro"
-#   subnet_id = aws_subnet.website-public[0].id
-#
-#   vpc_security_group_ids = [
-#     aws_security_group.webserver.id
-#   ]
-#
-#   tags = merge(local.common_tags, {
-#     "Name" = "${var.name}"
-#     "Environment" = var.env
-#   })
-# }
+resource "aws_instance" "web" {
+  # ami           = data.aws_ami.ubuntu.id
+  ami           = "ami-083b53142137770ad"
+  instance_type = "t3.micro"
+  subnet_id = aws_subnet.website-public[0].id
+  key_name = "aws.stockholm.xps13"
+  vpc_security_group_ids = [
+    aws_security_group.webserver.id,
+    aws_security_group.ssh.id
+  ]
+
+  tags = merge(local.common_tags, {
+    "Name" = "${var.name}"
+    "Environment" = var.env
+  })
+}
