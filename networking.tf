@@ -4,27 +4,23 @@ variable "vpc_cidr" {
 
 resource "aws_vpc" "main" {
   cidr_block       = var.vpc_cidr
-  instance_tenancy = "dedicated"
+  instance_tenancy = "default"
   enable_dns_hostnames = true
   enable_dns_support = true
 
-  tags = {
-    Name = var.name
-    Client = var.client
-    Env = var.env
-    Provider = var.solution_provider
-  }
+  tags = merge(local.common_tags, {
+    "Name" = var.name
+    "Environment" = var.env
+  })
 }
 
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
-  tags = {
-    Name = var.name
-    Client = var.client
-    Env = var.env
-    Provider = var.solution_provider
-  }
+  tags = merge(local.common_tags, {
+    "Name" = var.name,
+    "Environment" = var.env
+  })
 }
 
 resource "aws_default_route_table" "main" {
@@ -35,12 +31,10 @@ resource "aws_default_route_table" "main" {
       gateway_id = aws_internet_gateway.main.id
   }
 
-  tags = {
-    Name = "${var.name}-public"
-    Client = var.client
-    Env = var.env
-    Provider = var.solution_provider
-  }
+  tags = merge(local.common_tags, {
+    "Name" = "${var.name}-public"
+    "Environment" = var.env
+  })
 }
 
 
@@ -52,12 +46,10 @@ resource "aws_route_table" "private" {
   #     gateway_id = aws_internet_gateway.main.id
   # }
 
-  tags = {
-    Name = "${var.name}-private"
-    Client = var.client
-    Env = var.env
-    Provider = var.solution_provider
-  }
+  tags = merge(local.common_tags, {
+    "Name" = "${var.name}-private"
+    "Environment" = var.env
+  })
 }
 
 # Declare the data source
@@ -70,13 +62,12 @@ resource "aws_subnet" "website-public" {
   vpc_id     = aws_vpc.main.id
   cidr_block = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index+1)
   availability_zone = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = true
 
-  tags = {
-    Name = "${var.name}-public"
-    Client = var.client
-    Env = var.env
-    Provider = var.solution_provider
-  }
+  tags = merge(local.common_tags, {
+    "Name" = "${var.name}-public"
+    "Environment" = var.env
+  })
 
   depends_on = [ data.aws_availability_zones.available ]
 }
@@ -87,12 +78,10 @@ resource "aws_subnet" "website-private" {
   cidr_block = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index+10)
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
-  tags = {
-    Name = "${var.name}-private"
-    Client = var.client
-    Env = var.env
-    Provider = var.solution_provider
-  }
+  tags = merge(local.common_tags, {
+    "Name" = "${var.name}-private"
+    "Environment" = var.env
+  })
 
   depends_on = [ data.aws_availability_zones.available ]
 }
@@ -103,6 +92,39 @@ resource "aws_route_table_association" "private-association" {
   route_table_id = aws_route_table.private.id
 
   depends_on = [ data.aws_availability_zones.available ]
+}
+
+resource "aws_security_group" "webserver" {
+  name        = "Webserver"
+  description = "Allow necessary webserver traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+    # prefix_list_ids = ["pl-12c4e678"]
+  }
+
+  tags = merge(local.common_tags, {
+    "Name" = "${var.name}-webserver"
+    "Environment" = var.env
+  })
 }
 
 # output "cidr" {
