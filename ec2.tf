@@ -20,11 +20,13 @@
 #   ami           = "ami-083b53142137770ad"
 #   instance_type = "t3.micro"
 #   subnet_id = aws_subnet.website-public[0].id
+#
 #   vpc_security_group_ids = [
 #     aws_security_group.webserver.id
 #   ]
-# tags = merge(local.common_tags, {
-#   "Name" = "${var.name}"
-#   "Environment" = var.env
-# })
+#
+#   tags = merge(local.common_tags, {
+#     "Name" = "${var.name}"
+#     "Environment" = var.env
+#   })
 # }
