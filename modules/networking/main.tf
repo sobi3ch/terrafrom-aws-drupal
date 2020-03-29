@@ -22,7 +22,7 @@ resource "aws_default_route_table" "public" {
   }
 
   tags = merge(var.tags, {
-    "Name" = "${var.tags.Name} public"
+    "Name" = "${var.name} public"
   })
 }
 
@@ -31,7 +31,7 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
   tags = merge(var.tags, {
-    "Name" = "${var.tags.Name} private"
+    "Name" = "${var.name} private"
   })
 }
 
@@ -48,7 +48,7 @@ resource "aws_subnet" "website_public" {
   map_public_ip_on_launch = true
 
   tags = merge(var.tags, {
-    "Name" = "${var.tags.Name} public"
+    "Name" = "${var.name} public"
   })
 
   depends_on = [ data.aws_availability_zones.available ]
@@ -61,7 +61,7 @@ resource "aws_subnet" "website_private" {
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = merge(var.tags, {
-    "Name" = "${var.tags.Name} private"
+    "Name" = "${var.name} private"
   })
 
   depends_on = [ data.aws_availability_zones.available ]
@@ -102,7 +102,7 @@ resource "aws_security_group" "webserver" {
   }
 
   tags = merge(var.tags, {
-    "Name" = "${var.tags.Name} webserver"
+    "Name" = "${var.name} webserver"
   })
 }
 
@@ -126,6 +126,6 @@ resource "aws_security_group" "ssh" {
   }
 
   tags = merge(var.tags, {
-    "Name" = "${var.tags.Name} SSH"
+    "Name" = "${var.name} SSH"
   })
 }

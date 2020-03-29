@@ -1,14 +1,9 @@
-locals {
-  client = "Eclectic"
-  solution_provider = "Allunel"
+variable "client" {
+  default = "Eclectic"
 }
 
-locals {
-  # Common tags to be assigned to all resources
-  common_tags = {
-    Client   = local.client
-    Provider = local.solution_provider
-  }
+variable "supplier" {
+  default = "Allunel"
 }
 
 variable "name" {
@@ -16,7 +11,18 @@ variable "name" {
   default = "Website"
 }
 
-variable "env" {
+variable "environment" {
   type = string
   default = "Development"
+}
+
+locals {
+  client = var.client
+  solution_provider = var.supplier
+
+  # Common tags to be assigned to all resources
+  common_tags = {
+    Client   = local.client
+    Provider = local.solution_provider
+  }
 }

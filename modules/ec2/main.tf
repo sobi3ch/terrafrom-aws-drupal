@@ -22,11 +22,10 @@
 #
 # # EC2 key pair
 # resource "aws_key_pair" "web" {
-#   key_name   = "ssh-${var.name}-${local.client}"
+#   key_name   = local.key_name
 #   public_key = tls_private_key.generated_key.public_key_openssh
-#   tags = merge(local.common_tags, {
-#     "Name" = var.name
-#     "Environment" = var.env
+#   tags = merge(var.tags, {
+#     "Name" = "${var.name} public"
 #   })
 # }
 #
