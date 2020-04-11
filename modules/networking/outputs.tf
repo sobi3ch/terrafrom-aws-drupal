@@ -20,3 +20,7 @@ output "vpc" {
     "default_route_table_id"    = aws_vpc.main.default_route_table_id
   }
 }
+
+output "AZs" {
+  value = data.aws_availability_zones.available.names
+}

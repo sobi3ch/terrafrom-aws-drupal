@@ -10,6 +10,10 @@ output "subnets_private" {
   value = module.networking.subnets_private
 }
 
+output "AZs" {
+  value = module.networking.AZs
+}
+
 output "key_name_test" {
   value = module.ec2.key_name_test
 }
