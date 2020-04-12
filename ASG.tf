@@ -21,8 +21,12 @@ resource "aws_autoscaling_group" "bar" {
     version = "$Latest"
   }
   availability_zones   = module.networking.AZs
+  vpc_zone_identifier  = module.networking.subnets_public
   min_size             = 1
-  max_size             = 2
+  desired_capacity     = 2
+  max_size             = 4
+  #load_balancers       = # One or more load balancers associated with the group.
+  #target_group_arns  = # The Amazon Resource Names (ARN) of the target groups for your load balancer.
 }
 
 resource "aws_launch_template" "foo" {
@@ -32,7 +36,10 @@ resource "aws_launch_template" "foo" {
   key_name = "aws.stockholm.xps13"
 
   # todo: add security groups output in networking module and then you can use it here; then t apply and check
-  # security_group_names = [ module.networking.webserver_sg.name , module.networking.ssh_sg.name ]
+  vpc_security_group_ids = [
+    module.networking.webserver_sg.id,
+    module.networking.ssh_sg.id
+  ]
   instance_initiated_shutdown_behavior = "terminate"
 
   instance_market_options {
@@ -44,10 +51,6 @@ resource "aws_launch_template" "foo" {
 
   monitoring {
     enabled = true
-  }
-
-  network_interfaces {
-    associate_public_ip_address = true
   }
 
   tag_specifications {
