@@ -17,3 +17,17 @@ output "AZs" {
 output "key_name_test" {
   value = module.ec2.key_name_test
 }
+
+output "webserver_sg" {
+  value = {
+    name = module.networking.webserver_sg.name
+    id   = module.networking.webserver_sg.id
+  }
+}
+
+output "ssh_sg" {
+  value = {
+    name = module.networking.ssh_sg.name
+    id   = module.networking.ssh_sg.id
+  }
+}

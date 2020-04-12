@@ -24,3 +24,11 @@ output "vpc" {
 output "AZs" {
   value = data.aws_availability_zones.available.names
 }
+
+output "webserver_sg" {
+  value = aws_security_group.webserver
+}
+
+output "ssh_sg" {
+  value = aws_security_group.ssh
+}
