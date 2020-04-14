@@ -14,21 +14,6 @@ data "aws_ami" "Drupal_AMI" {
 
 }
 
-resource "aws_autoscaling_group" "bar" {
-  name                 = "terraform-asg-drupal"
-  launch_template {
-    id      = aws_launch_template.foo.id
-    version = "$Latest"
-  }
-  availability_zones   = module.networking.AZs
-  vpc_zone_identifier  = module.networking.subnets_public
-  min_size             = 1
-  desired_capacity     = 2
-  max_size             = 4
-  #load_balancers       = # One or more load balancers associated with the group.
-  #target_group_arns  = # The Amazon Resource Names (ARN) of the target groups for your load balancer.
-}
-
 resource "aws_launch_template" "foo" {
   name = "drupal"
   image_id = data.aws_ami.Drupal_AMI.id
@@ -62,4 +47,19 @@ resource "aws_launch_template" "foo" {
   }
 
   user_data = filebase64("./user_data.sh")
+}
+
+
+resource "aws_autoscaling_group" "drupal" {
+  name                 = "terraform-asg-drupal"
+  vpc_zone_identifier  = module.networking.subnets_public
+  min_size             = 1
+  desired_capacity     = 2
+  max_size             = 4
+  target_group_arns    = [ aws_lb_target_group.drupal.arn ]
+
+  launch_template {
+    id      = aws_launch_template.foo.id
+    version = "$Latest"
+  }
 }
