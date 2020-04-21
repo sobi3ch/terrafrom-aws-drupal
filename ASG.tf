@@ -54,7 +54,7 @@ resource "aws_autoscaling_group" "drupal" {
   name                 = "terraform-asg-drupal"
   vpc_zone_identifier  = module.networking.subnets_public
   min_size             = 1
-  desired_capacity     = 2
+  desired_capacity     = 1
   max_size             = 4
   target_group_arns    = [ aws_lb_target_group.drupal.arn ]
 

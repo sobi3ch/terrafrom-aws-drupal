@@ -8,7 +8,7 @@ module "networking" {
   })
 }
 
-module "ec2" {
+module "webapp" {
   source = "./modules/ec2"
   name = "Website"
   environment = "Development"
