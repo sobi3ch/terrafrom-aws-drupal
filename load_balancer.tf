@@ -9,7 +9,7 @@ resource "aws_lb" "drupal" {
   name               = "drupal-terrafrom-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [ module.networking.webserver_sg.id ]
+  security_groups    = [module.networking.webserver_sg.id]
   subnets            = module.networking.subnets_public
 
   # enable_deletion_protection = true
