@@ -1,5 +1,5 @@
 config {
-  format = "compact"
+  format = "default"
   plugin_dir = "~/.tflint.d/plugins"
 
   call_module_type = "local"
