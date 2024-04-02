@@ -108,21 +108,38 @@ module "ses" {}
 
 
 #### FUTURE
+### observability
+## logging  <---------------------
+# cloudwatch first
+# opensearch second
+
 ## monitoring <---------------------
 # cloudwatch first
 # elastic stack second
 
+## tracing <---------------------
+# x-ray first
+# open-telemetry
+# jeagger
+
 ## integration (CI) <---------------------
+# codebuild first
 
 ## deployment (CD) <---------------------
 # codedeploy first
+
+## tests
+# code pipeline first
 
 ## backups <---------------------
 # first https://aws.amazon.com/backup/
 
 ## analitics <---------------------
+# AWS glue/opensaerch/readshift (?)
 
 ## queues <---------------------
 
 ## notify <---------------------
 # slack first https://github.com/terraform-aws-modules/terraform-aws-notify-slack
+# email
+# teams 
