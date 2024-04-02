@@ -1,23 +1,25 @@
 variable "client" {
   default = "Eclectic"
+  type    = string
 }
 
 variable "supplier" {
   default = "Allunel"
+  type    = string
 }
 
 variable "name" {
-  type = string
+  type    = string
   default = "Website"
 }
 
 variable "environment" {
-  type = string
+  type    = string
   default = "Development"
 }
 
 locals {
-  client = var.client
+  client            = var.client
   solution_provider = var.supplier
 
   # Common tags to be assigned to all resources

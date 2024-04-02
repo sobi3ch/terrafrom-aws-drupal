@@ -1,6 +1,6 @@
 data "aws_ami" "Drupal_AMI" {
   most_recent = true
-  owners = ["self"]
+  owners      = ["self"]
 
   filter {
     name   = "name"
@@ -15,10 +15,10 @@ data "aws_ami" "Drupal_AMI" {
 }
 
 resource "aws_launch_template" "foo" {
-  name = "drupal"
-  image_id = data.aws_ami.Drupal_AMI.id
+  name          = "drupal"
+  image_id      = data.aws_ami.Drupal_AMI.id
   instance_type = "t3.micro"
-  key_name = "aws.stockholm.xps13"
+  key_name      = "aws.stockholm.xps13"
 
   # todo: add security groups output in networking module and then you can use it here; then t apply and check
   vpc_security_group_ids = [
@@ -51,12 +51,12 @@ resource "aws_launch_template" "foo" {
 
 
 resource "aws_autoscaling_group" "drupal" {
-  name                 = "terraform-asg-drupal"
-  vpc_zone_identifier  = module.networking.subnets_public
-  min_size             = 1
-  desired_capacity     = 1
-  max_size             = 4
-  target_group_arns    = [ aws_lb_target_group.drupal.arn ]
+  name                = "terraform-asg-drupal"
+  vpc_zone_identifier = module.networking.subnets_public
+  min_size            = 1
+  desired_capacity    = 1
+  max_size            = 4
+  target_group_arns   = [aws_lb_target_group.drupal.arn]
 
   launch_template {
     id      = aws_launch_template.foo.id
