@@ -1,21 +1,25 @@
 variable "client" {
-  default = "Eclectic"
-  type    = string
+  description = "Client we are working for"
+  default     = "Eclectic"
+  type        = string
 }
 
 variable "supplier" {
-  default = "Allunel"
-  type    = string
+  description = "Copany which make acctual work"
+  default     = "Allunel"
+  type        = string
 }
 
 variable "name" {
-  type    = string
-  default = "Website"
+  description = "Project name"
+  type        = string
+  default     = "Website"
 }
 
 variable "environment" {
-  type    = string
-  default = "Development"
+  description = "Enviroment (dev/stage/prod/etc)"
+  type        = string
+  default     = "Development"
 }
 
 locals {

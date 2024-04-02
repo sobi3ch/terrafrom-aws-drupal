@@ -33,5 +33,6 @@
 # }
 
 output "alb_endpoint" {
-  value = aws_lb.drupal.dns_name
+  description = "Application Load Balancer endpoint URL"
+  value       = aws_lb.drupal.dns_name
 }

@@ -1,4 +1,4 @@
-data "aws_ami" "Drupal_AMI" {
+data "aws_ami" "drupal_ami" {
   most_recent = true
   owners      = ["self"]
 
@@ -16,7 +16,7 @@ data "aws_ami" "Drupal_AMI" {
 
 resource "aws_launch_template" "foo" {
   name          = "drupal"
-  image_id      = data.aws_ami.Drupal_AMI.id
+  image_id      = data.aws_ami.drupal_ami.id
   instance_type = "t3.micro"
   key_name      = "aws.stockholm.xps13"
 
