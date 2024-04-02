@@ -1,11 +1,11 @@
 output "subnets_public" {
   description = "Public subents"
-  value = aws_subnet.website_public.*.id
+  value       = aws_subnet.website_public.*.id
 }
 
 output "subnets_private" {
   description = "Private subents"
-  value = aws_subnet.website_private.*.id
+  value       = aws_subnet.website_private.*.id
 }
 
 output "vpc" {

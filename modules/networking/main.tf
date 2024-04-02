@@ -1,8 +1,8 @@
 resource "aws_vpc" "main" {
-  cidr_block       = var.vpc_cidr
-  instance_tenancy = "default"
+  cidr_block           = var.vpc_cidr
+  instance_tenancy     = "default"
   enable_dns_hostnames = true
-  enable_dns_support = true
+  enable_dns_support   = true
 
   tags = var.tags
 }
@@ -41,38 +41,38 @@ data "aws_availability_zones" "available" {
 }
 
 resource "aws_subnet" "website_public" {
-  count = length(data.aws_availability_zones.available.names)
-  vpc_id     = aws_vpc.main.id
-  cidr_block = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index+1)
-  availability_zone = data.aws_availability_zones.available.names[count.index]
+  count                   = length(data.aws_availability_zones.available.names)
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index + 1)
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = true
 
   tags = merge(var.tags, {
     "Name" = "${var.name} public"
   })
 
-  depends_on = [ data.aws_availability_zones.available ]
+  depends_on = [data.aws_availability_zones.available]
 }
 
 resource "aws_subnet" "website_private" {
-  count = length(data.aws_availability_zones.available.names)
-  vpc_id     = aws_vpc.main.id
-  cidr_block = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index+10)
+  count             = length(data.aws_availability_zones.available.names)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index + 10)
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = merge(var.tags, {
     "Name" = "${var.name} private"
   })
 
-  depends_on = [ data.aws_availability_zones.available ]
+  depends_on = [data.aws_availability_zones.available]
 }
 
 resource "aws_route_table_association" "private_association" {
-  count = length(data.aws_availability_zones.available.names)
+  count          = length(data.aws_availability_zones.available.names)
   subnet_id      = aws_subnet.website_private[count.index].id
   route_table_id = aws_route_table.private.id
 
-  depends_on = [ data.aws_availability_zones.available ]
+  depends_on = [data.aws_availability_zones.available]
 }
 
 resource "aws_security_group" "webserver" {
@@ -95,10 +95,10 @@ resource "aws_security_group" "webserver" {
   }
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = merge(var.tags, {
@@ -119,10 +119,10 @@ resource "aws_security_group" "ssh" {
   }
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["83.4.208.162/32"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["83.4.208.162/32"]
   }
 
   tags = merge(var.tags, {
