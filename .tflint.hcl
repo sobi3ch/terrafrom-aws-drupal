@@ -17,3 +17,32 @@ plugin "terraform" {
   enabled = true
   preset  = "all"
 }
+
+# Follow https://www.terraform-best-practices.com/naming
+rule "terraform_naming_convention" {
+  enabled = true
+
+  module {
+    format = "snake_case"
+  }
+
+  resource {
+    format = "snake_case"
+  }
+
+  data {
+    format = "snake_case"
+  }
+
+  locals {
+    format = "snake_case"
+  }
+
+  variable {
+    format = "snake_case"
+  }
+
+  output {
+    format = "snake_case"
+  }
+}
